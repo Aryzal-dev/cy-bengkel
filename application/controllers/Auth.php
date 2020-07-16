@@ -1,22 +1,25 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Auth extends CI_Controller {
+class Auth extends CI_Controller
+{
 
-    function __construct() {
+    function __construct()
+    {
         parent::__construct();
 
         $this->load->model("user_model");
     }
 
-    function index() {
+    function index()
+    {
         $this->login();
     }
 
 
-	public function login()
-	{
-        if($this->session->auth['logged_in']) {
+    public function login()
+    {
+        if ($this->session->auth['logged_in']) {
             redirect(base_url("dashboard"));
         }
 
@@ -27,7 +30,7 @@ class Auth extends CI_Controller {
             "pageTitle" => "Login",
             "authPage" => TRUE
         ];
-        if($this->input->post()) {
+        if ($this->input->post()) {
             $username = $this->input->post("username");
             $password = $this->input->post("password");
 
@@ -38,12 +41,12 @@ class Auth extends CI_Controller {
 
             $error = FALSE;
 
-            if(!$query->num_rows()) {
+            if (!$query->num_rows()) {
                 $error = "Username atau password yang anda masukkan salah";
             } else {
                 $fetch = $query->row();
 
-                if(!password_verify($password,$fetch->password)) {
+                if (!password_verify($password, $fetch->password)) {
                     $error = "Username atau password yang anda masukkan salah";
                 } else {
                     $setSession = [
@@ -51,25 +54,26 @@ class Auth extends CI_Controller {
                         "id" => $fetch->id
                     ];
 
-                    $this->session->set_userdata("auth",$setSession);
+                    $this->session->set_userdata("auth", $setSession);
 
                     redirect(base_url("dashboard"));
                 }
             }
 
-            if($error) {
+            if ($error) {
                 $push['error'] = $error;
             }
         }
-
-		$this->load->view('header',$push);
-		$this->load->view('login',$push);
-		$this->load->view('footer',$push);
+        echo password_hash("12345", PASSWORD_BCRYPT);
+        $this->load->view('header', $push);
+        $this->load->view('login', $push);
+        $this->load->view('footer', $push);
     }
-    
-    function logout() {
 
-        if($this->session->auth['logged_in']) {
+    function logout()
+    {
+
+        if ($this->session->auth['logged_in']) {
             $this->session->unset_userdata("auth");
             redirect(base_url("auth/login"));
         }
